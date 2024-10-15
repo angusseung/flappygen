@@ -1,6 +1,21 @@
 import pygame
 from pygame.locals import *
 import random
+from diffusers import DiffusionPipeline
+import torch
+
+model = "runwayml/stable-diffusion-v1-5"
+
+pipe = DiffusionPipeline.from_pretrained(model, torch_dtype=torch.float16)
+pipe.to("cuda")
+
+height = 768
+width = 864
+
+backgroundImage = pipe("horizontal scrolling clean cartoon cloundy sky", num_inference_steps=20, height=height, width=width).images
+
+background_path = "./img/background.png"
+backgroundImage[0].save(background_path)
 
 pygame.init()
 
@@ -26,7 +41,7 @@ last_pipe = pygame.time.get_ticks() - pipe_frequency
 score = 0
 pass_pipe = False
 
-bg = pygame.image.load('img/bg.png')
+bg = pygame.image.load('img/background.png')
 button_img = pygame.image.load('img/restart.png')
 
 def draw_text(text, font, text_col, x, y):
