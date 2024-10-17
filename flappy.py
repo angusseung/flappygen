@@ -1,21 +1,20 @@
 import pygame
 from pygame.locals import *
 import random
-from diffusers import DiffusionPipeline
 import torch
+from diffusers import StableDiffusionImg2ImgPipeline
+from diffusers.utils import load_image
 
-model = "runwayml/stable-diffusion-v1-5"
+pipeline = StableDiffusionImg2ImgPipeline.from_pretrained(
+    "runwayml/stable-diffusion-v1-5",
+    torch_dtype=torch.float16,
+).to("cuda")
 
-pipe = DiffusionPipeline.from_pretrained(model, torch_dtype=torch.float16)
-pipe.to("cuda")
+background_reference = load_image("./img/ref/background.png")
+background_prompt = "clean cartoon cloundy sky"
 
-height = 768
-width = 864
-
-backgroundImage = pipe("horizontal scrolling clean cartoon cloundy sky", num_inference_steps=20, height=height, width=width).images
-
-background_path = "./img/background.png"
-backgroundImage[0].save(background_path)
+background_image = pipeline(prompt=background_prompt, image=background_reference, strength=0.8).images[0]
+background_image.save("./img/background.png")
 
 pygame.init()
 
