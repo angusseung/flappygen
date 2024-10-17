@@ -8,13 +8,18 @@ from diffusers.utils import load_image
 pipeline = StableDiffusionImg2ImgPipeline.from_pretrained(
     "runwayml/stable-diffusion-v1-5",
     torch_dtype=torch.float16,
+    safety_checker = None,
 ).to("cuda")
 
 background_reference = load_image("./img/ref/background.png")
 background_prompt = "clean cartoon cloundy sky"
-
 background_image = pipeline(prompt=background_prompt, image=background_reference, strength=0.8).images[0]
 background_image.save("./img/background.png")
+
+pipe_reference = load_image("./img/ref/pipe.png")
+pipe_prompt = "repeated geometry pattern"
+pipe_image = pipeline(prompt=pipe_prompt, image=pipe_reference, strength=0.2).images[0]
+pipe_image.save("./img/pipe.png")
 
 pygame.init()
 
